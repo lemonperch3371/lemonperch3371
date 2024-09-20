@@ -13,7 +13,7 @@ import scipy as sp
 from scipy.optimize import curve_fit
 import re #for splitting strings
 
-file = open(r"C:\Users\vermaa\Desktop\Python Codes\ZrSe2.dat",'r')
+file = open(r"<INSERT FILE PATH>",'r')
 file_lines = file.readlines()
 last_line = file_lines[-1]
 for line in file_lines:
