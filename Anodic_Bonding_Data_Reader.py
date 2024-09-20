@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy as sp
 from scipy.optimize import curve_fit as cf
-file = open(r"C:\Users\vermaa\Desktop\Python Codes\Anodic Bonding Data\AB_MoS2_Pre2_BS_4_620240916_145743.txt","r")
+file = open(r"<INSERT PATH>","r")
 file_lines = file.readlines()
 
 
