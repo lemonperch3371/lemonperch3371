@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/7cd0659e-428a-4198-af2e-7d2d6da350c1)Hello, I am a Ph.D. Student in the Department of Quantum Matter Physics at the Université de Genève!
+Hello, I am a Ph.D. Student in the Department of Quantum Matter Physics at the Université de Genève!
 This repository will (hopefully) contain Python code to read Nanonis Data (Topographies, Conductance Measurements, Maps, etc.)
 
 I also aim to incorporate machine learning techniques to get better curve fittings and cleaner images for analysis and interpretation. I want to make it possible for STM researchers to find an inbuilt program for processing their data. 
