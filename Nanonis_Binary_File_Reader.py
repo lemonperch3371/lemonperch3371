@@ -8,6 +8,8 @@ Scanning Probe Microscopy (Renner Group)
 Department of Quantum Matter Physics
 Université de Genève
 24 Quai Ernest-Ansermet, Genève-1205, Suisse
+
+Module Name: NanoRenn3A
 """
 
 import numpy as np
@@ -18,7 +20,7 @@ import os
 import cv2
 from PIL import Image
 import moviepy.video.io.ImageSequenceClip
-
+import datetime
 
 
 # file_path = r"Z:\IvanMaggio-Aprile\NbPt-2020\Nb_Pt film S2\Tip 3 - Ir-Au coated\NbPt-S2_IMA_Aur_2020-02-06_15-37-34_20mV-400pA-100nm-5pix-0.400K-0.25T-ZFC-001.3ds"
@@ -26,10 +28,14 @@ file_path = r"C:\Users\vermaa\Desktop\NANONIS BINARY FILE DATA\Au111.3ds"
 # file_path = r"Z:\TimGazdic\Good maps\52KOD\Grid Spectroscopy(3x3nm,256px,B=0T,50pA, atomic scale small gap modulation)001.3ds"
 # file_path = r"C:\Users\vermaa\Desktop\NANONIS BINARY FILE DATA\Au111.3ds"
 # file_path = r"Z:\TimGazdic\Good maps\71KUD\Grid Spectroscopy(5nm d density form factor)002.3ds"
+
+
 ### HEADER STRING EXTRACTOR
 header_string_file = open(file_path,"rb")
 long_header_string = header_string_file.read()
-header_string = long_header_string[0:5000]
+
+header_string = long_header_string[0:5000] #Just for Testing
+
 header_end_finder = long_header_string.find(b"HEADER_END")
 byte_shift = header_end_finder + len("HEADER_END:\r\n")
 unarranged_header = long_header_string[:header_end_finder + len("HEADER_END:\r\n")].decode("utf-8")
@@ -43,6 +49,7 @@ header = arranged_header
 
 #### BINARY FILE READER
 long_file = np.fromfile(file_path,dtype = ">f4",offset = byte_shift)
+
 file = long_file[0:5000]
 #### BINARY FILE READER
 
@@ -75,7 +82,7 @@ def contains(variable = "not found",array = header):
         #     break
         # break #maybe it needs to be removed
     if (index_array == [] and final_array == []):
-        print("bhak madarchod")
+        print("!!!INVALID!!!")
     else: 
         return(index_array,final_array)
 
@@ -89,6 +96,15 @@ def number_of_parameters():
     nop2 = nop1.replace('"','')
     number_of_parameters = len(nop2.split(";"))
     return(number_of_parameters)
+
+def number_of_parameters2():
+    index, nop = contains("Experiment Parameters", header)
+    nop_string = nop[0]
+    equals_finder = nop_string.find("=")
+    nop1 = nop_string[equals_finder+1:]
+    nop2 = nop1.replace('"','')
+    number_of_parameters = len(nop2.split(";"))
+    return(number_of_parameters,nop_string,nop)
 
 def parameters():
     index, p = contains("Experiment parameters", header)
@@ -149,6 +165,7 @@ def grid_dimensions():
 def points():
     index,p = contains("Points")
     points = int((p[0].split("="))[1])
+    print(p)
     return(points)
     
 
@@ -268,6 +285,7 @@ def I_V_Plotter(x = 0,y = 0):
     plt.title("I (A) vs Bias (V) for ({},{})".format(x+1,y+1))
     return()
 
+
 def dIdV_V_Plotter(x = 0,y = 0):
     i = channel_dictionary()["LIX 1 omega (A)"]
     v = bias_sweep_array()
@@ -277,7 +295,8 @@ def dIdV_V_Plotter(x = 0,y = 0):
     plt.title("dI/dV vs Bias (V) for ({},{})".format(x,y))
     return()
 
-def dIdV_Map(pt = 20, vmin_factor = 0.5,vmax_factor = 1.5):
+
+def dIdV_Map(pt = 41, vmin_factor = 0.5,vmax_factor = 1.5):
     cd = channel_dictionary()
     # cd_key_list = list(cd.keys())
     lix = cd['LIX 1 omega (A)']
@@ -286,14 +305,11 @@ def dIdV_Map(pt = 20, vmin_factor = 0.5,vmax_factor = 1.5):
     dat  = lix[:,:,pt]
     figure,axes = plt.subplots(figsize = (13,13))
     plt.subplots_adjust(top = 0.8,bottom = 0.1)
-    img = axes.imshow(dat,vmin = vmin_factor*np.average(dat),vmax = vmax_factor*np.average(dat))
+    img = axes.imshow(dat,vmin = vmin_factor*np.average(dat),vmax = vmax_factor*np.average(dat),cmap = 'magma')
     plt.colorbar(img,ax = axes)
     plt.title("dIdV Map: Bias = {}".format(bias_sweep_array()[pt]))
     plt.savefig(r"C:\Users\vermaa\Desktop\Python Codes\Random Images\{}".format(pt))
-    
     return(0)
-
-
 
 
 def dIdV_Maps(point = 41, vmin_factor = 0.7,vmax_factor = 1.2, input_directory = r"C:\Users\vermaa\Desktop\Python Codes\Random Images", output_gif_path = r"C:\Users\vermaa\Desktop\Python Codes\Random Gifs\Gif2.gif"):
@@ -308,9 +324,9 @@ def dIdV_Maps(point = 41, vmin_factor = 0.7,vmax_factor = 1.2, input_directory =
         
         figure,axes = plt.subplots(figsize = (11,11))
         plt.subplots_adjust(left = 0.05, right = 0.95,top = 0.95,bottom = 0.05)
-        img = axes.imshow(dat,vmin = vmin_factor*np.average(dat),vmax = vmax_factor*np.average(dat))
+        img = axes.imshow(dat,vmin = vmin_factor*np.average(dat),vmax = vmax_factor*np.average(dat),cmap = 'cividis')
         plt.colorbar(img,ax = axes)
-        plt.title("dIdV Map: Bias = {}".format(bias_sweep_array()[pt]))
+        plt.title("dIdV Map: Bias = {:.2f}".format(bias_sweep_array()[pt]))
         plt.savefig(r"C:\Users\vermaa\Desktop\Python Codes\Random Images\{}".format(pt))
     return ()
 
@@ -365,32 +381,33 @@ def image_pdf_generator(input_directory,output_pdf_path):
     print(f"PDF with the path {output_pdf_path} was saved")
     return()
 
-def video_generator(input_directory,output_video_path):
-    images = []
-    file_names = os.listdir(input_directory)
+# def video_generator(input_directory,output_video_path):
+#     images = []
+#     file_names = os.listdir(input_directory)
     
-    frame = cv2.imread(os.path.join(input_directory,file_names[0]))
-    height,width,layers = frame.shape
-    fourcc = cv2.VideoWriter_fourcc(*'H246')
+#     frame = cv2.imread(os.path.join(input_directory,file_names[0]))
+#     height,width,layers = frame.shape
+#     fourcc = cv2.VideoWriter_fourcc(*'H246')
     
-    video = cv2.VideoWriter(output_video_path,fourcc,1,(width,height))
+#     video = cv2.VideoWriter(output_video_path,fourcc,1,(width,height))
     
-    for image in images:
-        video.write(cv2.imread(os.path.join(input_directory,image)))
+#     for image in images:
+#         video.write(cv2.imread(os.path.join(input_directory,image)))
     
-    cv2.destroyAllWindows()
-    video.release()
-    print(f"Video successfully saves to: {output_video_path}")  
-    return()
+#     cv2.destroyAllWindows()
+#     video.release()
+#     print(f"Video successfully saves to: {output_video_path}")  
+#     return()
 
 
 def new_video_generator(input_directory,output_video_path):
-    video_name = 'mov_1.avi'
+    video_name = 'dIdV_Maps_Movie_{}.avi'.format(f_dt)
     sorted_file_names = file_name_sorter(os.listdir(input_directory))
     image_paths = [os.path.join(input_directory,image) for image in sorted_file_names if image.endswith('.png')]
-    fps = 2
+    fps = 4
     clip = moviepy.video.io.ImageSequenceClip.ImageSequenceClip(image_paths, fps = fps)
-    clip.write_videofile(os.path.join(output_video_path,video_name),codec = 'libx264')
+    clip.write_videofile(os.path.join(output_video_path,video_name),codec = 'libx264',preset = 'slow')
+    print(image_paths)
     #os.path.join(output_video_path,video_name)
     return()
 
@@ -399,14 +416,22 @@ if __name__=="__main__":
     #Input Directory for Images
     input_directory = r"C:\Users\vermaa\Desktop\Python Codes\Random Images"
     
+    #Datetime business
+    dt = datetime.datetime.now()
+    dt_array = [dt.year,dt.month,dt.day,dt.day,dt.hour,dt.minute,dt.second]
+    f_dt = ''.join(str(i99) for i99 in dt_array)
     
-    output_gif_path = r"C:\Users\vermaa\Desktop\Python Codes\Random Gifs\GDC_GIF.gif"
-    output_pdf_path = r"C:\Users\vermaa\Desktop\Python Codes\Random PDFs\PDF5.pdf"
+    
+    output_gif_path = r"C:\Users\vermaa\Desktop\Python Codes\Random Gifs\GDC_GIF_{}.gif".format(f_dt)
+    output_pdf_path = r"C:\Users\vermaa\Desktop\Python Codes\Random PDFs\dIdV_Maps_PDF_{}.pdf".format(f_dt)
     output_video_path = r"C:\Users\vermaa\Desktop\Python Codes\Random Videos"
-    dIdV_Maps()
+    
+    # dIdV_Maps()
     create_gif_from_images(input_directory, output_gif_path)  
     image_pdf_generator(input_directory, output_pdf_path)
     new_video_generator(input_directory,output_video_path)
+    
+    #Single dIdV_Map
     # dIdV_Map()
 
        
