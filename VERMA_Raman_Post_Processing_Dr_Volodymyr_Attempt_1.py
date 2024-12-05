@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Oct 18 17:48:19 2024
+Last Update: 5 December 2024
 
 @author: VERMA Anshuman
 Ph.D. Student
@@ -76,7 +77,7 @@ limits = 150
 ##############
 ################
 ################ POST PROCESSING PATH 
-post_processing_path = r"F:\RAMAN DATA\2024\MoS2_Borosilicate_01_13_November_2024\VERMA_Post_Processing_new_4"
+post_processing_path = r"F:\RAMAN DATA\2024\MoS2_Borosilicate_01_13_November_2024\VERMA_Post_Processing_new"
 ###############
 ################
 ##################
@@ -202,7 +203,7 @@ for img_path in image_paths:
     image_list.append(np.array(img_resized))              
 
 # Save video
-fps = 2
+fps = 25
 output_video = os.path.join(output_video_path, "MOVIE.mp4")
 imageio.mimsave(output_video, image_list, fps=fps)
 
@@ -544,4 +545,5 @@ def Plot_ColorMapped_Raman_Shifts_New():
 if __name__=="__main__":
     Raman_Laser_Path()
     Plot_ColorMapped_Raman_Shifts_New()
+    
     
